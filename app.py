@@ -31,8 +31,8 @@ st.subheader("1. FMEA scenario")
 
 col1, col2, col3 = st.columns(3)
 with col1:
-    predictability = st.selectbox(
-        "Predictability",
+    detectability = st.selectbox(
+        "Detectability",
         options=["HIGH", "MEDIUM", "LOW"],
         help="How easily an incoming failure can be detected in advance.",
     )
@@ -60,15 +60,15 @@ with c1:
     cinter = st.slider(
         "Cinter — cost of a single intervention (€)",
         min_value=500.0,
-        max_value=15000.0,
-        value=5000.0,
+        max_value=8000.0,
+        value=4250.0,
         step=50.0,
     )
     beta = st.slider(
         "Beta — Weibull shape parameter",
         min_value=1.0,
         max_value=5.0,
-        value=2.5,
+        value=3.0,
         step=0.05,
     )
 with c2:
@@ -76,7 +76,7 @@ with c2:
         "CSystPdM — yearly cost of the monitoring system (€/year)",
         min_value=500.0,
         max_value=30000.0,
-        value=5000.0,
+        value=15200.0,
         step=100.0,
     )
     alfa = st.slider(
@@ -91,7 +91,7 @@ st.divider()
 
 if st.button("🔍 Get recommended strategy", type="primary", use_container_width=True):
     result = pipeline.query_tree(
-        models, leaf_stats, predictability, severity, occurrence, cinter, csystpdm, beta, alfa
+        models, leaf_stats, detectability, severity, occurrence, cinter, csystpdm, beta, alfa
     )
 
     if "error" in result:
@@ -119,25 +119,23 @@ if st.button("🔍 Get recommended strategy", type="primary", use_container_widt
 
         if saving_expected_pct is not None:
             st.write("")
-            st.write("Historical expected impact for this leaf:")
+            st.write("Expected impact for this scenario:")
             m1, m2 = st.columns(2)
             m1.metric(
                 "Expected extra savings (%)",
                 f"{saving_expected_pct:.1%}",
-                help="Average % saved vs. the corrective baseline, among the leaf's historical "
-                "cases where the recommendation was correct, weighted by the leaf's accuracy.",
+                help="Historical average % saved vs. the corrective  "
+                 baseline, weighted by the scenario's accuracy.",
             )
             m2.metric(
                 "Expected extra cost (%)",
                 f"{cost_expected_pct:.1%}",
-                help="Average % extra cost vs. the true optimal strategy, among the leaf's "
-                "historical cases where the recommendation was wrong, weighted by the leaf's "
-                "inaccuracy.",
+                help="Historical average % extra cost vs. the true optimal strategy,"
+                "weighted by the scenario's inaccuracy.",
             )
             st.caption(
-                f"Based on {n_samples} historical combinations that fall in the same "
-                "decision-tree leaf as your inputs. Both metrics are 0 when the leaf is "
-                "100% accurate."
+                f"Based on historical combinations."
+                "Both metrics are 0 when the leaf is 100% accurate."
             )
 
 with st.expander("ℹ️ How it works / definitions"):
@@ -149,7 +147,7 @@ with st.expander("ℹ️ How it works / definitions"):
 - **Predictive**: monitor the component's condition and intervene only when the
   data indicates an imminent risk.
 
-For each of the 27 combinations of Predictability × Severity × Occurrence, a
+For each of the 27 combinations of Detectability × Severity × Occurrence, a
 decision tree (max depth 3) was trained that, given Cinter, CSystPdM, Beta and
 Alfa, predicts which of the three strategies minimizes the expected total cost.
 Since the tree only checks numeric thresholds, any continuous value for these
@@ -160,12 +158,12 @@ in the leaf your inputs land on — i.e. the leaf's accuracy for the recommended
 class (and the complementary share for the other classes present in that leaf).
 
 **Expected extra savings**: among the leaf's historical cases where the tree's
-recommendation *was* the optimal strategy, this is the average % saved versus
+recommendation was the optimal strategy, this is the average % saved versus
 the corrective (run-to-failure) baseline, weighted by the leaf's accuracy — i.e.
 by how often that leaf is right.
 
 **Expected extra cost**: among the leaf's historical cases where the tree's
-recommendation was *not* the optimal strategy, this is the average extra cost
+recommendation was not the optimal strategy, this is the average extra cost
 paid (as a % of the correct strategy's cost), weighted by the leaf's
 inaccuracy — i.e. by how often that leaf is wrong. It is 0 whenever the leaf is
 100% accurate.
