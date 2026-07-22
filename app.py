@@ -125,7 +125,7 @@ if st.button("🔍 Get recommended strategy", type="primary", use_container_widt
                 "Expected extra savings (%)",
                 f"{saving_expected_pct:.1%}",
                 help="Historical average % saved vs. the corrective"
-                "baseline, weighted by the scenario's accuracy.",
+                " baseline, weighted by the scenario's accuracy.",
             )
             m2.metric(
                 "Expected extra cost (%)",
