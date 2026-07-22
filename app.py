@@ -133,10 +133,6 @@ if st.button("🔍 Get recommended strategy", type="primary", use_container_widt
                 help="Historical average % extra cost vs. the true optimal strategy,"
                 "weighted by the scenario's inaccuracy.",
             )
-            st.caption(
-                f"Based on historical combinations."
-                "Both metrics are 0 when the leaf is 100% accurate."
-            )
 
 with st.expander("ℹ️ How it works / definitions"):
     st.markdown(
