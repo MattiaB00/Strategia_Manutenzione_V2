@@ -58,7 +58,7 @@ st.caption(
 c1, c2 = st.columns(2)
 with c1:
     cinter = st.slider(
-        "Cinter — cost of a single intervention (€)",
+        "Cinter — cost of a single schedule intervention (€)",
         min_value=500.0,
         max_value=8000.0,
         value=4250.0,
@@ -73,14 +73,14 @@ with c1:
     )
 with c2:
     csystpdm = st.slider(
-        "CSystPdM — yearly cost of the monitoring system (€/year)",
+        "CSystPdM — yearly cost of the Predictive system (€/year)",
         min_value=500.0,
         max_value=30000.0,
         value=15200.0,
         step=100.0,
     )
     alfa = st.slider(
-        "Alfa — utilization level of the monitoring system",
+        "Alfa — ratio between the yearly cost of the Predetermined and the Predictive System",
         min_value=0.0,
         max_value=1.0,
         value=0.5,
