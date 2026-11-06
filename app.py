@@ -100,18 +100,29 @@ if st.button("🔍 Get recommended policy", type="primary", use_container_width=
         colors = {
             "PREDICTIVE": "green",
             "PREVENTIVE": "orange",
+            "PREDETERMINED": "orange",
             "CORRECTIVE": "red",
         }
         policy = result["strategy"]
-        color = colors.get(policy, "blue")
-
-        st.markdown(f"### Recommended policy: :{color}[{policy}]")
+        
+        display_names = {
+            "PREVENTIVE": "PREDETERMINED",
+        }
+        
+        display_policy = display_names.get(policy, policy)
+        color = colors.get(display_policy, "blue")
+        
+        st.markdown(f"### Recommended policy: :{color}[{display_policy}]")
 
         st.write("Estimated probability for the selected scenario:")
         proba = result["proba"]
         for cls in ["PREDICTIVE", "PREVENTIVE", "CORRECTIVE"]:
             if cls in proba:
-                st.progress(float(proba[cls]), text=f"{cls}: {proba[cls]:.0%}")
+                display_cls = display_names.get(cls, cls)
+                st.progress(
+                    float(proba[cls]),
+                    text=f"{display_cls}: {proba[cls]:.0%}"
+                )
 
         saving_expected_pct = result.get("saving_expected_pct")
         cost_expected_pct = result.get("cost_expected_pct")
