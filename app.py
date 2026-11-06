@@ -3,16 +3,16 @@ import streamlit as st
 import pipeline
 
 st.set_page_config(
-    page_title="Optimal Maintenance Strategy",
+    page_title="Optimal Maintenance Policy",
     page_icon="🛠️",
     layout="centered",
 )
 
-st.title("🛠️ Optimal Maintenance Strategy")
+st.title("🛠️ Optimal Maintenance Policy")
 st.write(
     "This tool suggests, based on the FMEA scenario and a few economic/reliability "
-    "parameters, which maintenance strategy is more convenient among **Corrective**, "
-    "**Preventive** and **Predictive**, using a decision tree trained on the cost "
+    "parameters, which maintenance policy is more convenient among **Corrective**, "
+    "**Predetermined** and **Predictive**, using a decision tree trained on the cost "
     "of each policy."
 )
 
@@ -89,7 +89,7 @@ with c2:
 
 st.divider()
 
-if st.button("🔍 Get recommended strategy", type="primary", use_container_width=True):
+if st.button("🔍 Get recommended policy", type="primary", use_container_width=True):
     result = pipeline.query_tree(
         models, leaf_stats, detectability, severity, occurrence, cinter, csystpdm, beta, alfa
     )
@@ -102,10 +102,10 @@ if st.button("🔍 Get recommended strategy", type="primary", use_container_widt
             "PREVENTIVE": "orange",
             "CORRECTIVE": "red",
         }
-        strategy = result["strategy"]
-        color = colors.get(strategy, "blue")
+        policy = result["strategy"]
+        color = colors.get(policy, "blue")
 
-        st.markdown(f"### Recommended strategy: :{color}[{strategy}]")
+        st.markdown(f"### Recommended policy: :{color}[{policy}]")
 
         st.write("Estimated probability for the selected scenario:")
         proba = result["proba"]
@@ -130,7 +130,7 @@ if st.button("🔍 Get recommended strategy", type="primary", use_container_widt
             m2.metric(
                 "Expected extra cost (%)",
                 f"{cost_expected_pct:.1%}",
-                help="Historical average % extra cost vs. the true optimal strategy,"
+                help="Historical average % extra cost vs. the true optimal policy,"
                 "weighted by the scenario's inaccuracy.",
             )
 
@@ -138,7 +138,7 @@ with st.expander("ℹ️ How it works / definitions"):
     st.markdown(
         """
 - **Corrective**: intervene only after the failure occurs.
-- **Preventive**: replace/intervene at scheduled intervals, computed by optimizing
+- **Predetermined**: replace/intervene at scheduled intervals, computed by optimizing
   the trade-off between failure cost and early-intervention cost.
 - **Predictive**: monitor the component's condition and intervene only when the
   data indicates an imminent risk.
@@ -154,13 +154,13 @@ in the leaf your inputs land on — i.e. the leaf's accuracy for the recommended
 class (and the complementary share for the other classes present in that leaf).
 
 **Expected extra savings**: among the leaf's historical cases where the tree's
-recommendation was the optimal strategy, this is the average % saved versus
+recommendation was the optimal policy, this is the average % saved versus
 the corrective (run-to-failure) baseline, weighted by the leaf's accuracy — i.e.
 by how often that leaf is right.
 
 **Expected extra cost**: among the leaf's historical cases where the tree's
-recommendation was not the optimal strategy, this is the average extra cost
-paid (as a % of the correct strategy's cost), weighted by the leaf's
+recommendation was not the optimal policy, this is the average extra cost
+paid (as a % of the correct policy's cost), weighted by the leaf's
 inaccuracy — i.e. by how often that leaf is wrong. It is 0 whenever the leaf is
 100% accurate.
 
